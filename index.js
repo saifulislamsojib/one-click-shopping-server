@@ -45,6 +45,28 @@ client.connect(err => {
     });
   });
 
+  app.delete('/deleteProduct', (req, res) => {
+    const product = req.body;
+    productsCollection.deleteOne({_id: ObjectId(product._id)})
+    .then(result => {
+      res.send(result.deletedCount > 0);
+    })
+  });
+
+  app.patch('/updateProduct/:id', (req, res) => {
+    const product = req.body;
+    const {id} = req.params;
+    productsCollection.updateOne(
+      {_id: ObjectId(id)},
+      {
+        $set: {...product}
+      }
+      )
+    .then(result => {
+      res.send(result.modifiedCount > 0);
+    })
+  });
+
   app.post('/checkoutOrder', (req, res) => {
     const orderedProduct = req.body;
     ordersCollection.insertOne(orderedProduct)
