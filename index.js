@@ -75,9 +75,16 @@ client.connect(err => {
     })
   });
 
-  app.get("/orders/:email", (req, res) => {
-    const {email} = req.params;
+  app.get("/orders", (req, res) => {
+    const {email} = req.query;
     ordersCollection.find({email})
+    .toArray((err, documents) => {
+      res.send(documents)
+    });
+  });
+
+  app.get("/allOrders", (req, res) => {
+    ordersCollection.find({})
     .toArray((err, documents) => {
       res.send(documents)
     });
