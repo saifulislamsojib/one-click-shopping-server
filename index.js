@@ -2,11 +2,17 @@ const express = require('express');
 const cors = require('cors');
 const { MongoClient, ObjectId } = require('mongodb');
 require('dotenv').config();
+const admin = require('firebase-admin');
+const configs = require('./configs/configs.js');
 
 const app = express();
 
 app.use(express.json());
 app.use(cors());
+
+admin.initializeApp({
+  credential: admin.credential.cert(configs)
+});
 
 const port = process.env.PORT || 4000;
 
@@ -31,7 +37,8 @@ client.connect(err => {
   });
 
   app.get("/products", (req, res) => {
-    productsCollection.find({})
+    const { search } = req.query;
+    productsCollection.find({name: {$regex: search, $options: 'i'}})
     .toArray((err, documents) => {
       res.send(documents)
     });
@@ -43,6 +50,26 @@ client.connect(err => {
     .toArray((err, documents) => {
       res.send(documents[0])
     });
+  });
+
+  app.post("/user", (req, res) => {
+    const bearer = req.headers.authorization;
+    if (bearer && bearer.startsWith('Bearer ')) {
+      const idToken = bearer.split(' ')[1];
+      admin
+      .auth()
+      .verifyIdToken(idToken)
+      .then(decodedToken => {
+        const { uid, name, picture, email } = decodedToken;
+        res.send({ uid, name, photo: picture, email })
+      })
+      .catch(error => {
+        res.status(401).send({message: 'Unauthorized Access'});
+      });
+    }
+    else{
+      res.status(401).send({message: 'Unauthorized Access'});
+    }
   });
 
   app.delete('/deleteProduct', (req, res) => {
