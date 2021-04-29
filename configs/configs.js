@@ -10,5 +10,5 @@ module.exports = {
     auth_uri: process.env.AUTH_URI,
     token_uri: process.env.TOKEN_URI,
     auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
-    client_x509_cert_url: process.env.CLIENT_CERT_URL
+    client_x509_cert_url: "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-brpcb%40one-click-shopping-c.iam.gserviceaccount.com"
 };
