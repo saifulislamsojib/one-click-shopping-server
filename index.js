@@ -33,7 +33,7 @@ const client = new MongoClient(uri, {
       const product = req.body;
       productsCollection.insertOne(product).then((result) => {
         res.send({
-          inserted: result.insertedCount > 0,
+          inserted: result.acknowledged,
           _id: result.insertedId,
         });
       });
@@ -103,7 +103,7 @@ const client = new MongoClient(uri, {
     app.post("/checkoutOrder", (req, res) => {
       const orderedProduct = req.body;
       ordersCollection.insertOne(orderedProduct).then((result) => {
-        res.send(result.insertedCount > 0);
+        res.send(result.acknowledged);
       });
     });
 
